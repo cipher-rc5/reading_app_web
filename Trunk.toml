@@ -1,0 +1,21 @@
+[build]
+target = "index.html"
+dist = "dist"
+
+[watch]
+ignore = ["dist"]
+
+[serve]
+addresses = ["127.0.0.1"]
+port = 8080
+open = true
+
+[[hooks]]
+stage = "pre_build"
+command = "sh"
+command_arguments = ["-c", "echo 'Building reading_app_web...'"]
+
+[[hooks]]
+stage = "post_build"
+command = "sh"
+command_arguments = ["-c", "echo 'Build complete! IndexedDB-powered web app ready.'"]

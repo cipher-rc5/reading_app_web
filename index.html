@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reading App - Web Edition</title>
+
+    <link data-trunk rel="rust" data-target-name="reading_app_web" />
+    <link data-trunk rel="copy-file" href="assets/sw.js" />
+
+    <style>
+    html {
+        height: 100%;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(135deg, #272727 0%, #6B6B6B 100%);
+    }
+
+    #loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+    }
+
+    .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid white;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    canvas {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+    }
+    </style>
+  </head>
+
+  <body>
+    <div id="loading">
+      <div class="spinner"></div>
+      <h2>Loading Reading App...</h2>
+      <p>Initializing browser storage</p>
+    </div>
+
+    <canvas id="the_canvas_id"></canvas>
+
+    <script type="module">
+    async function run() {
+      const bindings = window.wasmBindings;
+      if (!bindings) {
+        throw new Error('WASM bindings not loaded');
+      }
+
+      // Start the app
+      bindings.start('the_canvas_id');
+
+      // Hide loading screen
+      document.getElementById('loading').style.display = 'none';
+    }
+
+    window.addEventListener('TrunkApplicationStarted', () => {
+      run().catch(err => {
+        document.getElementById('loading').innerHTML =
+          '<h2>Failed to start</h2><p>' + err + '</p>';
+      });
+    });
+
+    // Service worker for offline support
+    if ('serviceWorker' in navigator && window.location.hash !== '#dev') {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.js').then(reg =>
+          console.log('Service Worker registered')
+        ).catch(err => console.log('Service Worker registration failed:', err));
+      });
+    }
+    </script>
+  </body>
+</html>
