@@ -45,11 +45,3 @@ pub fn start(canvas_id: &str) -> Result<(), wasm_bindgen::JsValue> {
 
     Ok(())
 }
-
-#[cfg(not(target_arch = "wasm32"))]
-/// Non-wasm fallback for environments that cannot run the web entrypoint.
-pub fn start(_canvas_id: &str) -> anyhow::Result<()> {
-    Err(anyhow::anyhow!(
-        "The web app entrypoint is only available on wasm32 targets."
-    ))
-}

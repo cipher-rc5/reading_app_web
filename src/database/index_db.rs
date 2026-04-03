@@ -74,23 +74,6 @@ impl IndexedDbClient {
         Ok(())
     }
 
-    #[allow(dead_code)]
-    /// Loads a single article by id.
-    pub async fn get_article(&self, id: &str) -> Result<Option<Article>> {
-        let tx = self.open_transaction(ARTICLES_STORE, TransactionMode::Readonly)?;
-        let store = tx
-            .object_store(ARTICLES_STORE)
-            .map_err(|e| anyhow!("failed to access `{ARTICLES_STORE}` store: {e}"))?;
-        let article: Option<Article> = store
-            .get(id)
-            .serde()
-            .map_err(|e| anyhow!("failed to request article {id}: {e}"))?
-            .await
-            .map_err(|e| anyhow!("failed to read article {id}: {e}"))?;
-
-        Ok(article)
-    }
-
     /// Loads all stored articles.
     pub async fn get_all_articles(&self) -> Result<Vec<Article>> {
         let tx = self.open_transaction(ARTICLES_STORE, TransactionMode::Readonly)?;
@@ -161,64 +144,6 @@ impl IndexedDbClient {
             .map_err(|e| anyhow!("failed to read default settings: {e}"))?;
 
         Ok(settings)
-    }
-
-    #[allow(dead_code)]
-    pub async fn delete_settings(&self, id: &str) -> Result<()> {
-        let tx = self.open_transaction(SETTINGS_STORE, TransactionMode::Readwrite)?;
-        let store = tx
-            .object_store(SETTINGS_STORE)
-            .map_err(|e| anyhow!("failed to access `{SETTINGS_STORE}` store: {e}"))?;
-        store
-            .delete(id)
-            .serde()
-            .map_err(|e| anyhow!("failed to prepare delete for settings {id}: {e}"))?
-            .await
-            .map_err(|e| anyhow!("failed to delete settings {id}: {e}"))?;
-
-        tx.commit()
-            .await
-            .map_err(|e| anyhow!("failed to commit settings delete transaction: {e}"))?;
-
-        Ok(())
-    }
-
-    #[allow(dead_code)]
-    pub async fn clear_all_articles(&self) -> Result<()> {
-        let tx = self.open_transaction(ARTICLES_STORE, TransactionMode::Readwrite)?;
-        let store = tx
-            .object_store(ARTICLES_STORE)
-            .map_err(|e| anyhow!("failed to access `{ARTICLES_STORE}` store: {e}"))?;
-        store
-            .clear()
-            .map_err(|e| anyhow!("failed to request article clear: {e}"))?
-            .await
-            .map_err(|e| anyhow!("failed to clear articles: {e}"))?;
-
-        tx.commit()
-            .await
-            .map_err(|e| anyhow!("failed to commit article clear transaction: {e}"))?;
-
-        Ok(())
-    }
-
-    #[allow(dead_code)]
-    pub async fn clear_all_settings(&self) -> Result<()> {
-        let tx = self.open_transaction(SETTINGS_STORE, TransactionMode::Readwrite)?;
-        let store = tx
-            .object_store(SETTINGS_STORE)
-            .map_err(|e| anyhow!("failed to access `{SETTINGS_STORE}` store: {e}"))?;
-        store
-            .clear()
-            .map_err(|e| anyhow!("failed to request settings clear: {e}"))?
-            .await
-            .map_err(|e| anyhow!("failed to clear settings: {e}"))?;
-
-        tx.commit()
-            .await
-            .map_err(|e| anyhow!("failed to commit settings clear transaction: {e}"))?;
-
-        Ok(())
     }
 
     fn open_transaction<'a>(

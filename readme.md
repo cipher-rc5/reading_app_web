@@ -90,7 +90,11 @@ just dev
 just build
 just fmt
 just test
-just clean
+just clean        # defaults to 'all' (cargo + trunk)
+just clean cargo  # cargo clean only
+just clean trunk  # remove dist/ only
+just clean all    # both cargo clean and remove dist/
+just clean help   # show available modes
 ```
 
 ## Project Layout

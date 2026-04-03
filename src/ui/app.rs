@@ -66,7 +66,7 @@ impl ReadingApp {
         };
         ctx.set_visuals(visuals);
 
-        let mut style = (*ctx.style()).clone();
+        let mut style = (*ctx.global_style()).clone();
         let base_size = self.settings.font_size;
 
         if let Some(font_id) = style.text_styles.get_mut(&egui::TextStyle::Small) {
@@ -85,7 +85,7 @@ impl ReadingApp {
             font_id.size = base_size + 8.0;
         }
 
-        ctx.set_style(style);
+        ctx.set_global_style(style);
     }
 
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
@@ -327,11 +327,12 @@ impl ReadingApp {
 }
 
 impl eframe::App for ReadingApp {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        let ctx = ui.ctx().clone();
         self.process_messages();
-        self.apply_settings(ctx);
+        self.apply_settings(&ctx);
 
-        egui::CentralPanel::default().show(ctx, |ui| {
+        egui::CentralPanel::default().show_inside(ui, |ui| {
             ui.heading("Reading App (Web Edition)");
 
             if self.loading {

@@ -1,5 +1,7 @@
+#[cfg(not(target_arch = "wasm32"))]
 use std::io::{self, BufRead, BufReader, BufWriter, Write};
 
+#[cfg(not(target_arch = "wasm32"))]
 fn is_emoji(ch: char) -> bool {
     matches!(
         ch as u32,
@@ -8,6 +10,7 @@ fn is_emoji(ch: char) -> bool {
     )
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 fn main() -> io::Result<()> {
     let stdin = io::stdin();
     let stdout = io::stdout();
@@ -31,4 +34,10 @@ fn main() -> io::Result<()> {
     }
 
     Ok(())
+}
+
+#[cfg(target_arch = "wasm32")]
+fn main() {
+    // This binary is not meant to run in WASM context
+    panic!("trunk_log_filter is a native-only binary");
 }

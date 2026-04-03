@@ -41,7 +41,7 @@ setup:
     chmod +x scripts/*.sh; \
     echo "[INFO] Setup complete"
 
-clean mode="help":
+clean mode="all":
     set -euo pipefail; \
     case "{{mode}}" in \
     cargo) echo "[INFO] Running cargo clean"; cargo clean ;; \

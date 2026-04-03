@@ -2,6 +2,9 @@
 target = "index.html"
 dist = "dist"
 
+[build.wasm_opt]
+args = ["--enable-bulk-memory"]
+
 [watch]
 ignore = ["dist"]
 

@@ -68,4 +68,7 @@ fn main() -> anyhow::Result<()> {
 }
 
 #[cfg(target_arch = "wasm32")]
-fn main() {}
+fn main() {
+    // This binary is not meant to run in WASM context
+    panic!("server_config is a native-only binary");
+}
